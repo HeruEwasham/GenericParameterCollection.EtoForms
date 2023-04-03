@@ -5,6 +5,8 @@ VisualStudioVersion = 25.0.1705.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YngveHestem.GenericParameterCollection.EtoForms", "YngveHestem.GenericParameterCollection.EtoForms\YngveHestem.GenericParameterCollection.EtoForms.csproj", "{F41B3F03-9487-4DE0-A461-D9AB0B201D01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{0CB7250D-EEE0-42FB-9F62-89690922862B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{F41B3F03-9487-4DE0-A461-D9AB0B201D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F41B3F03-9487-4DE0-A461-D9AB0B201D01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F41B3F03-9487-4DE0-A461-D9AB0B201D01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CB7250D-EEE0-42FB-9F62-89690922862B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CB7250D-EEE0-42FB-9F62-89690922862B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CB7250D-EEE0-42FB-9F62-89690922862B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CB7250D-EEE0-42FB-9F62-89690922862B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

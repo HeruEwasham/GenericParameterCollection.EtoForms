@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.7.4" />
+    <PackageReference Include="YngveHestem.GenericParameterCollection" Version="1.0.2-beta15" />
+  </ItemGroup>
 </Project>

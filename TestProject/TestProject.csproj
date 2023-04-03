@@ -1,0 +1,21 @@
+﻿<Project Sdk="Eto.Forms/2.7.0">
+
+  <!--
+    Set the BuildPlatform property to the Eto platform you wish to build for.
+    The default is the platform you are building on.
+    Valid values: Wpf, Windows, Mac64, XamMac2, Gtk, Direct2D
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.7.4" />
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.7.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\YngveHestem.GenericParameterCollection.EtoForms\YngveHestem.GenericParameterCollection.EtoForms.csproj" />
+  </ItemGroup>
+</Project>
