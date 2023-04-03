@@ -2,10 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>1.0.0</ReleaseVersion>
+    <Version>1.0.0</Version>
+    <Description>This provides controls for using [GenericParameterCollection](https://github.com/HeruEwasham/GenericParameterCollection) in the GUI [Eto.Forms](https://github.com/picoe/Eto).</Description>
+    <PackageReleaseNotes>
+        Version 1.0.0:
+        - Initial release of a working version
+    </PackageReleaseNotes>
+    <Authors>Yngve J. K. Hestem</Authors>
+    <Copyright>Copyright (c) Yngve J. K. Hestem 2023</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>UI, parameter ParameterCollection collection eto.forms eto forms GUI parameters collections multiple-types-in-collection json key-value key-value-pair</PackageTags>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
+    <RepositoryUrl>https://github.com/HeruEwasham/GenericParameterCollection.EtoForms.git</RepositoryUrl> 
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Eto.Forms" Version="2.7.4" />
     <PackageReference Include="YngveHestem.GenericParameterCollection" Version="1.0.2-beta15" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
