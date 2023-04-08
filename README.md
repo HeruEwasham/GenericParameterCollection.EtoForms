@@ -1,6 +1,6 @@
 # GenericParameterCollection.EtoForms
 
-This provides controls for using [GenericParameterCollection](https://github.com/HeruEwasham/GenericParameterCollection) in the GUI [Eto.Forms](https://github.com/picoe/Eto).
+This provides controls for using [GenericParameterCollection](https://github.com/HeruEwasham/GenericParameterCollection) in the GUI-framework [Eto.Forms](https://github.com/picoe/Eto).
 
 ## How to use this package
 

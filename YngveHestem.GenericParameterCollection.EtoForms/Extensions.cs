@@ -270,7 +270,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                     }
                 };
             }
-            var statusText = options.CreateLabel("Selected item has size: " + ((byte[])selectButton.Parent.Tag).Length.GetSizeInMemory());
+            var statusText = options.CreateLabel("Selected item has size: " + value.Length.GetSizeInMemory());
 
             return new Panel
             {

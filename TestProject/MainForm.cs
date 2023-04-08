@@ -35,7 +35,10 @@ namespace TestProject
 			}),
 			new Parameter("A question", new string[] { "new test", "test 2" }),
 			new Parameter("Some dates", new DateTime[] { DateTime.Now, DateTime.MaxValue, DateTime.MinValue, DateTime.UtcNow, new DateTime(2021, 06, 15) }, true),
-            new Parameter("Some dates and times", new DateTime[] { DateTime.Now, DateTime.MaxValue, DateTime.MinValue, DateTime.UtcNow, new DateTime(2021, 06, 15) }, false),
+			new Parameter("Some dates and times", new DateTime[] { DateTime.Now, DateTime.MaxValue, DateTime.MinValue, DateTime.UtcNow, new DateTime(2021, 06, 15) }, false),
+			new Parameter("Bytes without content", new byte[0]),
+			new Parameter("Bytes with content", new byte[] { 5, 2 }),
+			new Parameter("number", 1)
         };
 
 		public MainForm()
