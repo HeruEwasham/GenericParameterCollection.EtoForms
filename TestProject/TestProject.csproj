@@ -17,5 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YngveHestem.GenericParameterCollection.EtoForms\YngveHestem.GenericParameterCollection.EtoForms.csproj" />
+    <ProjectReference Include="..\BytesPreview\YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Image\YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.ImagePreview.csproj" />
   </ItemGroup>
 </Project>

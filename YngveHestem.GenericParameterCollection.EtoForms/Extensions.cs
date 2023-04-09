@@ -275,7 +275,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                             });
                             if (previewInterface != null)
                             {
-                                stackLayout.Items.Add(previewInterface.GetPreviewControl(ext, value));
+                                stackLayout.Items.Add(previewInterface.GetPreviewControl(ext, bytes));
                             }
                         }
                     }

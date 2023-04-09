@@ -84,3 +84,7 @@ Mark that it exist multiple parameters that currently can not be defined in a Pa
 |  | filename | string | This can be added to a Bytes-parameter to give information on what the filename of the file was. This is just for cosmetics and is not neccessarry (but will provide info to the user). When a Bytes-parameter is updated, this parameter in Additionalinfo will also be added/updated by the editor (so if you want to know the filename and uses this editor, this parameter will give you that info) |  |
 |  | extension | string | The file extension for the filetype a Bytes-parameter has. The value should have a leading . This parameter is most likely needed if a preview of the file is wanted. This parameter in Additionalinfo will also be added/updated by the editor when the Bytes-parameter is updated |  |
 | BytesPreviews |  | IBytesPreview[] | List with all supported preview-implementation for byte-arrays. If one or more parameters has ParameterType.Bytes, the editor will check this list for possible preview-functionality. If it finds a suitable fit, it will select the first it finds.
+
+## Notice
+
+The code written in this repository/nuget package is MIT-licensed. But the code may be dependent on other nuget-packages that has other licenses. By using one or more of the packages in this repository you need to be aware of this and be sure to comply to these licenses as well. Look at each package on nuget to get a list of the packages that each package is dependent on.

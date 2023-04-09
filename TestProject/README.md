@@ -1,10 +1,6 @@
-﻿# GenericParameterCollection.EtoForms.BytesPreview.Core
+﻿# TestProject
 
-This package contains the neccessarry interface to create a preview for data in an array of bytes in an Eto.Forms application.
-
-## How to use this package
-
-The easiest way to use the package is to download it from nuget: https://www.nuget.org/packages/YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core
+This readme is to inform that this testproject is used as an example/testprogram for the different packages in this Github repository. This is therefore not a complete sample or meant to be used outside the scope of testing the code in this repository.
 
 ## Notice
 

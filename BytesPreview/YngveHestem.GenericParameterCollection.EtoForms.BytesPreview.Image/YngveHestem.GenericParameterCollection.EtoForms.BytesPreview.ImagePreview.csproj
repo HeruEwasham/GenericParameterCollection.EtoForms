@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>1.0.0</ReleaseVersion>
+    <Version>1.0.0</Version>
+    <Description>This package contains preview-capabillities for image files with the extension .jpg, .jpeg, .png, .bmp, .gif, .tif, .tiff.</Description>
+    <PackageReleaseNotes>
+        Version 1.0.0:
+        - Initial release
+    </PackageReleaseNotes>
+    <Authors>Yngve J. K. Hestem</Authors>
+    <Copyright>Copyright (c) Yngve J. K. Hestem 2023</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>UI, parameter ParameterCollection collection eto.forms eto forms GUI parameters collections multiple-types-in-collection json key-value key-value-pair bytesPreview preview filepreview image imagepreview</PackageTags>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
+    <RepositoryUrl>https://github.com/HeruEwasham/GenericParameterCollection.EtoForms.git</RepositoryUrl> 
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

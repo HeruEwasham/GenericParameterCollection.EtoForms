@@ -4,6 +4,8 @@ using Eto.Drawing;
 using YngveHestem.GenericParameterCollection.EtoForms;
 using YngveHestem.GenericParameterCollection;
 using System.Globalization;
+using YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core;
+using YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.ImagePreview;
 
 namespace TestProject
 {
@@ -41,6 +43,14 @@ namespace TestProject
 			new Parameter("number", 1)
         };
 
+		public ParameterCollectionPanelOptions Options = new ParameterCollectionPanelOptions
+		{
+			BytesPreviews = new IBytesPreview[]
+			{
+				new ImagePreview()
+			}
+		};
+
 		public MainForm()
 		{
 			Title = "My Eto Form";
@@ -49,7 +59,7 @@ namespace TestProject
 			var button = new Button { Text = "A button" };
 			button.Click += (s, e) =>
 			{
-				var dialog = new ParameterCollectionDialog(Parameters);
+				var dialog = new ParameterCollectionDialog(Parameters, Options);
 				var value = dialog.ShowModal();
 				if (value != null)
 				{
