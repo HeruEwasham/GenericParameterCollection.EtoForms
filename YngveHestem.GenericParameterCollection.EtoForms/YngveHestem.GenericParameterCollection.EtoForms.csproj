@@ -2,10 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>1.0.1</ReleaseVersion>
-    <Version>1.0.1</Version>
+    <ReleaseVersion>1.1.0-beta01</ReleaseVersion>
+    <Version>1.1.0-beta01</Version>
     <Description>This provides controls for using GenericParameterCollection in the GUI-framework Eto.Forms.</Description>
     <PackageReleaseNotes>
+        Version 1.1.0-beta01:
+        - Implements the support for preview-controls if the given type supports it. The implementations supported is given via the ParameterCollectionPanelOptions-object.
+
         Version 1.0.1:
         - Fixed a bug that made loading Bytes to crash with a null-exception.
 
@@ -24,7 +27,8 @@
 
   <ItemGroup>
     <PackageReference Include="Eto.Forms" Version="2.7.4" />
-    <PackageReference Include="YngveHestem.GenericParameterCollection" Version="1.0.2-beta15" />
+    <PackageReference Include="YngveHestem.GenericParameterCollection" Version="1.0.2-beta16" />
+    <PackageReference Include="YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="\" />

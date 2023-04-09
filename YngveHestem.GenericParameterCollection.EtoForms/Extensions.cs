@@ -3,10 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using Eto.Forms;
-using System.Data.Common;
 using System.IO;
-using Newtonsoft.Json.Linq;
-using Eto.Drawing;
 
 namespace YngveHestem.GenericParameterCollection.EtoForms
 {
@@ -226,7 +223,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static Panel CreateBytesPanel(this ParameterCollectionPanelOptions options, byte[] value)
+        internal static Panel CreateBytesPanel(this ParameterCollectionPanelOptions options, byte[] value, Parameter parameter)
         {
             var selectButton = new Button
             {
@@ -246,43 +243,84 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 selectButton.Click += (sender, e) =>
                 {
                     var oldParameter = (Parameter)((Control)sender).Parent.Parent.Tag;
-
                     var dialog = new OpenFileDialog
                     {
                         Title = "Select file for " + oldParameter.Key,
                         CheckFileExists = true,
                         MultiSelect = false
                     };
-                    if (oldParameter.HasAdditionalInfo())
+                    if (options.SupportedFileExtensions != null && options.SupportedFileExtensions.Length > 0)
                     {
-                        var additionalInfo = oldParameter.GetAdditionalInfo();
-                        if (additionalInfo.HasKeyAndCanConvertTo("supportedExtensions", typeof(string[])))
-                        {
-                            dialog.Filters.Add(new FileFilter("Supported file types", additionalInfo.GetByKey<string[]>("supportedExtensions")));
-                        }
+                        dialog.Filters.Add(new FileFilter("Supported file types", options.SupportedFileExtensions));
                     }
 
                     if (dialog.ShowDialog(selectButton) == DialogResult.Ok)
                     {
                         var bytes = File.ReadAllBytes(dialog.FileName);
+                        var filename = Path.GetFileName(dialog.FileName);
                         ((Control)sender).Parent.Tag = bytes;
-                        ((Label)((StackLayout)((Control)sender).Parent).Items[1].Control).Text = "Selected item has size: " + bytes.Length.GetSizeInMemory();
+                        ((Control)sender).Tag = filename;
+                        var stackLayout = ((StackLayout)((Control)sender).Parent);
+                        ((Label)stackLayout.Items[1].Control).Text = "Selected item has size: " + bytes.Length.GetSizeInMemory() + Environment.NewLine + "Filename: " + filename;
+                        if (stackLayout.Items.Count == 3)
+                        {
+                            stackLayout.Items.RemoveAt(2);
+                        }
+                        if (options.BytesPreviews != null)
+                        {
+                            var ext = Path.GetExtension(filename);
+                            var previewInterface = options.BytesPreviews.FirstOrDefault((o) =>
+                            {
+                                return o.CanPreviewBytes(ext, bytes);
+                            });
+                            if (previewInterface != null)
+                            {
+                                stackLayout.Items.Add(previewInterface.GetPreviewControl(ext, value));
+                            }
+                        }
                     }
                 };
             }
-            var statusText = options.CreateLabel("Selected item has size: " + value.Length.GetSizeInMemory());
+            var statusText = "Selected item has size: " + value.Length.GetSizeInMemory();
+            string extension = null;
+            if (parameter.HasAdditionalInfo())
+            {
+                var oAdI = parameter.GetAdditionalInfo();
+                if (oAdI.HasKeyAndCanConvertTo("filename", typeof(string)))
+                {
+                    statusText += Environment.NewLine + "Filename: " + oAdI.GetByKey<string>("filename");
+                }
+                if (oAdI.HasKeyAndCanConvertTo("extension", typeof(string)))
+                {
+                    extension = oAdI.GetByKey<string>("extension");
+                }
+            }
+
+            var stacklayout = new StackLayout
+            {
+                Tag = value,
+                Items =
+                {
+                    selectButton,
+                    options.CreateLabel(statusText)
+                }
+            };
+
+            if (options.BytesPreviews != null)
+            {
+                var previewInterface = options.BytesPreviews.FirstOrDefault((o) =>
+                {
+                    return o.CanPreviewBytes(extension, value);
+                });
+                if (previewInterface != null)
+                {
+                    stacklayout.Items.Add(previewInterface.GetPreviewControl(extension, value));
+                }
+            }
 
             return new Panel
             {
-                Content = new StackLayout
-                {
-                    Tag = value,
-                    Items =
-                    {
-                        selectButton,
-                        statusText
-                    }
-                }
+                Content = stacklayout
             };
         }
 
