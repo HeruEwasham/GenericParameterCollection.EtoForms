@@ -3,20 +3,32 @@ using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Data.Common;
+using System.Linq;
 
 namespace YngveHestem.GenericParameterCollection.EtoForms
 {	
 	public class ControlDialog<TResult> : Dialog<TResult>
 	{
         public bool Success { get; private set; }
-		public ControlDialog(TResult currentValue, ParameterCollectionPanelOptions options, ParameterType type)
+		public ControlDialog(TResult currentValue, ParameterCollectionPanelOptions options, ParameterType type, ParameterCollection additionalParameters, List<ICustomParameterControl> customControls)
 		{
 			if (options == null)
 			{
 				options = new ParameterCollectionPanelOptions();
 			}
 			Control control = null;
-            if (type == ParameterType.String)
+
+            ICustomParameterControl customControl = null;
+            if (customControls != null)
+            {
+                customControl = customControls.FirstOrDefault(cc => cc.CanCreateControl(currentValue, type, additionalParameters, options));
+            }
+
+            if (customControl != null)
+            {
+                control = customControl.CreateControl(currentValue, type, additionalParameters, options);
+            }
+            else if (type == ParameterType.String)
 			{
                 control = options.CreateTextBox(currentValue.ToString());
             }
@@ -28,9 +40,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             {
                 control = options.CreateNumericStepper((double)(object)currentValue, true);
             }
-            else if (type == ParameterType.Float
-				|| type == ParameterType.Double
-				|| type == ParameterType.Long)
+            else if (type == ParameterType.Decimal)
             {
                 control = options.CreateNumericStepper((double)(object)currentValue);
             }

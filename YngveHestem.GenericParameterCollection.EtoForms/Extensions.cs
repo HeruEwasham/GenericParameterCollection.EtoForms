@@ -14,7 +14,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             return text.FirstCharToUpper();
         }
 
-        internal static string FirstCharToUpper(this string input)
+        public static string FirstCharToUpper(this string input)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -23,13 +23,13 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             return $"{input[0].ToString().ToUpper()}{input.Substring(1)}";
         }
 
-        internal static Control AddParameter(this Control control, Parameter parameter)
+        public static Control AddParameter(this Control control, Parameter parameter)
         {
             control.Tag = parameter;
             return control;
         }
 
-        internal static Label CreateLabel(this ParameterCollectionPanelOptions options, string text, bool isParameterName = false)
+        public static Label CreateLabel(this ParameterCollectionPanelOptions options, string text, bool isParameterName = false)
         {
             return new Label
             {
@@ -40,7 +40,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static TextBox CreateTextBox(this ParameterCollectionPanelOptions options, string value)
+        public static TextBox CreateTextBox(this ParameterCollectionPanelOptions options, string value)
         {
             return new TextBox
             {
@@ -52,7 +52,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static TextArea CreateTextArea(this ParameterCollectionPanelOptions options, string value)
+        public static TextArea CreateTextArea(this ParameterCollectionPanelOptions options, string value)
         {
             return new TextArea
             {
@@ -64,7 +64,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static NumericStepper CreateNumericStepper(this ParameterCollectionPanelOptions options, double value, bool onlyInt = false)
+        public static NumericStepper CreateNumericStepper(this ParameterCollectionPanelOptions options, double value, bool onlyInt = false)
         {
             return new NumericStepper
             {
@@ -78,7 +78,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static CheckBox CreateCheckBox(this ParameterCollectionPanelOptions options, bool value)
+        public static CheckBox CreateCheckBox(this ParameterCollectionPanelOptions options, bool value)
         {
             return new CheckBox
             {
@@ -90,7 +90,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static DropDown CreateDropDown(this ParameterCollectionPanelOptions options, string value, IEnumerable<string> choices)
+        public static DropDown CreateDropDown(this ParameterCollectionPanelOptions options, string value, IEnumerable<string> choices)
         {
             var control = new DropDown
             {
@@ -112,7 +112,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             return control;
         }
 
-        internal static ComboBox CreateComboBox(this ParameterCollectionPanelOptions options, string value, IEnumerable<string> choices)
+        public static ComboBox CreateComboBox(this ParameterCollectionPanelOptions options, string value, IEnumerable<string> choices)
         {
             var control = new ComboBox
             {
@@ -135,7 +135,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             return control;
         }
 
-        internal static GridView<string> CreateGridViewSingleSelect(this ParameterCollectionPanelOptions options, string value, List<string> choices)
+        public static GridView<string> CreateGridViewSingleSelect(this ParameterCollectionPanelOptions options, string value, List<string> choices)
         {
             var control = new GridView<string>
             {
@@ -167,7 +167,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             return control;
         }
 
-        internal static GridView<string> CreateGridViewMultiSelect(this ParameterCollectionPanelOptions options, List<string> values, List<string> choices)
+        public static GridView<string> CreateGridViewMultiSelect(this ParameterCollectionPanelOptions options, List<string> values, List<string> choices)
         {
             var control = new GridView<string>
             {
@@ -208,7 +208,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             return control;
         }
 
-        internal static DateTimePicker CreateDateTimePicker(this ParameterCollectionPanelOptions options, DateTime value, DateTimePickerMode mode)
+        public static DateTimePicker CreateDateTimePicker(this ParameterCollectionPanelOptions options, DateTime value, DateTimePickerMode mode)
         {
             return new DateTimePicker
             {
@@ -223,7 +223,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static Panel CreateBytesPanel(this ParameterCollectionPanelOptions options, byte[] value, Parameter parameter)
+        public static Panel CreateBytesPanel(this ParameterCollectionPanelOptions options, byte[] value, Parameter parameter)
         {
             var selectButton = new Button
             {
@@ -324,7 +324,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static Panel CreateParameterCollectionOpenDialogPanel(this ParameterCollectionPanelOptions options, ParameterCollection value)
+        public static Panel CreateParameterCollectionOpenDialogPanel(this ParameterCollectionPanelOptions options, ParameterCollection value)
         {
             var showEditButton = new Button
             {
@@ -357,7 +357,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
         }
 
-        internal static Panel CreateList<TValue>(this ParameterCollectionPanelOptions options, Parameter parameter)
+        public static Panel CreateList<TValue>(this ParameterCollectionPanelOptions options, Parameter parameter, List<ICustomParameterControl> customControls)
         {
             if (options == null)
             {
@@ -431,7 +431,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             };
             addButton.Click += (s, e) =>
             {
-                var dialog = new ControlDialog<TValue>(defaultValue, options, pTypeSingle);
+                var dialog = new ControlDialog<TValue>(defaultValue, options, pTypeSingle, parameter.GetAdditionalInfo(), customControls);
                 var value = dialog.ShowModal();
                 if (dialog.Success)
                 {
@@ -465,7 +465,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 if (listBox.SelectedIndex >= 0)
                 {
                     var item = (ListItem)listBox.Items[listBox.SelectedIndex];
-                    var dialog = new ControlDialog<TValue>((TValue)item.Tag, options, parameter.Type.ToSingle());
+                    var dialog = new ControlDialog<TValue>((TValue)item.Tag, options, parameter.Type.ToSingle(), parameter.GetAdditionalInfo(), customControls);
                     var value = dialog.ShowModal();
                     if (dialog.Success)
                     {
@@ -569,17 +569,9 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             {
                 return ParameterType.Int;
             }
-            else if (type == ParameterType.Float || type == ParameterType.Float_IEnumerable)
+            else if (type == ParameterType.Decimal || type == ParameterType.Decimal_IEnumerable)
             {
-                return ParameterType.Float;
-            }
-            else if (type == ParameterType.Double || type == ParameterType.Double_IEnumerable)
-            {
-                return ParameterType.Double;
-            }
-            else if (type == ParameterType.Long || type == ParameterType.Long_IEnumerable)
-            {
-                return ParameterType.Long;
+                return ParameterType.Decimal;
             }
             else if (type == ParameterType.Bool || type == ParameterType.Bool_IEnumerable)
             {

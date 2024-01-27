@@ -10,10 +10,15 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
     public class ParameterCollectionPanel : Panel
     {
         private ParameterCollection _parameters;
+        private List<ICustomParameterControl> _customControls;
 
-        public ParameterCollectionPanel(ParameterCollection parameters, ParameterCollectionPanelOptions options = null)
+        public ParameterCollectionPanel(ParameterCollection parameters, ParameterCollectionPanelOptions options = null, IEnumerable<ICustomParameterControl> customParameterControls = null)
         {
             _parameters = parameters;
+            if (customParameterControls != null)
+            {
+                _customControls = customParameterControls.ToList();
+            }
             Content = new TableLayout(GetRows(parameters, options))
             {
                 Spacing = new Size(10, 10)
@@ -46,7 +51,17 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
         private Tuple<object, ParameterCollection> GetValue(Control control, ParameterType returnType, Parameter oldParameter)
         {
             var type = control.GetType();
-            if (type == typeof(TextBox))
+            ICustomParameterControl customControl = null;
+            if (_customControls != null)
+            {
+                customControl = _customControls.FirstOrDefault(cc => cc.CanGetValue(type, control, returnType, oldParameter));
+            }
+
+            if (customControl != null)
+            {
+                return new Tuple<object, ParameterCollection>(customControl.GetValue(type, control, returnType, oldParameter), customControl.GetAdditionalInfo(type, control, returnType, oldParameter));
+            }
+            else if (type == typeof(TextBox))
             {
                 return new Tuple<object, ParameterCollection>(((TextBox)control).Text, oldParameter.GetAdditionalInfo());
             }
@@ -60,13 +75,9 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 {
                     return new Tuple<object, ParameterCollection>((int)((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
                 }
-                else if (returnType == ParameterType.Float)
+                else if (returnType == ParameterType.Decimal)
                 {
-                    return new Tuple<object, ParameterCollection>((float)((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
-                }
-                else if (returnType == ParameterType.Long)
-                {
-                    return new Tuple<object, ParameterCollection>((long)((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
+                    return new Tuple<object, ParameterCollection>((decimal)((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
                 }
                 return new Tuple<object, ParameterCollection>(((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
             }
@@ -181,7 +192,17 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                     parameterOptions = ParameterCollectionPanelOptions.CreateFromParameterCollection(parameter.GetAdditionalInfo(), parameterOptions);
                 }
 
-                if (parameter.Type == ParameterType.String)
+                ICustomParameterControl customControl = null;
+                if (_customControls != null)
+                {
+                    customControl = _customControls.FirstOrDefault(cc => cc.CanCreateControl(parameter, parameterOptions));
+                }
+
+                if (customControl != null)
+                {
+                    control = customControl.CreateControl(parameter, parameterOptions).AddParameter(parameter);
+                }
+                else if (parameter.Type == ParameterType.String)
                 {
                     control = parameterOptions.CreateTextBox(parameter.GetValue<string>()).AddParameter(parameter);
                 }
@@ -193,9 +214,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 {
                     control = parameterOptions.CreateNumericStepper(parameter.GetValue<double>(), true).AddParameter(parameter);
                 }
-                else if (parameter.Type == ParameterType.Float
-                    || parameter.Type == ParameterType.Double
-                    || parameter.Type == ParameterType.Long)
+                else if (parameter.Type == ParameterType.Decimal)
                 {
                     control = parameterOptions.CreateNumericStepper(parameter.GetValue<double>()).AddParameter(parameter);
                 }
@@ -217,35 +236,27 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 }
                 else if (parameter.Type == ParameterType.String_IEnumerable || parameter.Type == ParameterType.String_Multiline_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<string>(parameter);
+                    control = parameterOptions.CreateList<string>(parameter, _customControls);
                 }
                 else if (parameter.Type == ParameterType.Int_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<int>(parameter);
+                    control = parameterOptions.CreateList<int>(parameter, _customControls);
                 }
-                else if (parameter.Type == ParameterType.Float_IEnumerable)
+                else if (parameter.Type == ParameterType.Decimal_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<float>(parameter);
-                }
-                else if (parameter.Type == ParameterType.Double_IEnumerable)
-                {
-                    control = parameterOptions.CreateList<double>(parameter);
-                }
-                else if (parameter.Type == ParameterType.Long_IEnumerable)
-                {
-                    control = parameterOptions.CreateList<long>(parameter);
+                    control = parameterOptions.CreateList<decimal>(parameter, _customControls);
                 }
                 else if (parameter.Type == ParameterType.Bool_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<bool>(parameter);
+                    control = parameterOptions.CreateList<bool>(parameter, _customControls);
                 }
                 else if (parameter.Type == ParameterType.DateTime_IEnumerable || parameter.Type == ParameterType.Date_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<DateTime>(parameter);
+                    control = parameterOptions.CreateList<DateTime>(parameter, _customControls);
                 }
                 else if (parameter.Type == ParameterType.ParameterCollection_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<ParameterCollection>(parameter);
+                    control = parameterOptions.CreateList<ParameterCollection>(parameter, _customControls);
                 }
                 else if (parameter.Type == ParameterType.Enum || parameter.Type == ParameterType.SelectOne)
                 {

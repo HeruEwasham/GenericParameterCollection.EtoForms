@@ -6,6 +6,8 @@ using YngveHestem.GenericParameterCollection;
 using System.Globalization;
 using YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core;
 using YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.ImagePreview;
+using YngveHestem.GenericParameterCollection.ParameterValueConverters;
+using System.Collections.Generic;
 
 namespace TestProject
 {
@@ -40,7 +42,26 @@ namespace TestProject
 			new Parameter("Some dates and times", new DateTime[] { DateTime.Now, DateTime.MaxValue, DateTime.MinValue, DateTime.UtcNow, new DateTime(2021, 06, 15) }, false),
 			new Parameter("Bytes without content", new byte[0]),
 			new Parameter("Bytes with content", new byte[] { 5, 2 }),
-			new Parameter("number", 1)
+			new Parameter("number", 1),
+			new Parameter("A color", Colors.BlueViolet, new ParameterCollection
+			{
+				new Parameter("type", "color")
+			}, null, CustomConverters),
+			new Parameter("A color", Colors.Blue, new ParameterCollection
+			{
+				new Parameter("type", "color"),
+				new Parameter("readOnly", true)
+			}, null, CustomConverters),
+            new Parameter("Some colors", new List<Color> {
+				Colors.BlueViolet,
+				Colors.Blue,
+				Colors.Black,
+				Colors.White,
+				new Color(0.5f, 0.5f, 0.5f, 0.5f)
+			}, new ParameterCollection
+            {
+                new Parameter("type", "color")
+            }, null, CustomConverters)
         };
 
 		public ParameterCollectionPanelOptions Options = new ParameterCollectionPanelOptions
@@ -51,24 +72,39 @@ namespace TestProject
 			}
 		};
 
-		public MainForm()
+        public static IParameterValueConverter[] CustomConverters =
+        {
+            new SimpleColorConverter()
+        };
+
+        public static ICustomParameterControl[] CustomControls =
+        {
+            new SimpleColorPickerControl()
+        };
+
+        public MainForm()
 		{
 			Title = "My Eto Form";
 			MinimumSize = new Size(200, 200);
-
-			var button = new Button { Text = "A button" };
+            var textarea = new TextArea
+            {
+                Text = Parameters.ToJson(),
+                Size = new Size(200, 200)
+            };
+            var button = new Button { Text = "A button" };
 			button.Click += (s, e) =>
 			{
-				var dialog = new ParameterCollectionDialog(Parameters, Options);
+				var dialog = new ParameterCollectionDialog(Parameters, Options, CustomControls);
 				var value = dialog.ShowModal();
 				if (value != null)
 				{
 					Parameters = value;
+					textarea.Text = Parameters.ToJson();
 				}
 			};
 			var label = new Label { Text = "Font on button text: " + button.Font };
 
-			Content = new StackLayout
+            Content = new StackLayout
 			{
 				Padding = 10,
 				Items =
@@ -77,7 +113,8 @@ namespace TestProject
 					// add more controls here
 					button,
 					label,
-					new Label {Text = "Font on label: " + label.Font}
+					new Label {Text = "Font on label: " + label.Font},
+					textarea
 				}
 			};
 

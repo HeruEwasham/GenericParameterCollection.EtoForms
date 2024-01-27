@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.7.4" />
-    <PackageReference Include="Eto.Platform.Mac64" Version="2.7.4" />
+    <PackageReference Include="Eto.Forms" Version="2.8.2" />
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.8.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YngveHestem.GenericParameterCollection.EtoForms\YngveHestem.GenericParameterCollection.EtoForms.csproj" />

@@ -2,10 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>1.1.0-beta01</ReleaseVersion>
-    <Version>1.1.0-beta01</Version>
+    <ReleaseVersion>1.1.0-beta03</ReleaseVersion>
+    <Version>1.1.0-beta02</Version>
     <Description>This provides controls for using GenericParameterCollection in the GUI-framework Eto.Forms.</Description>
     <PackageReleaseNotes>
+        Version 1.1.0-beta03:
+        - Updated Eto.Forms to version 2.8.2.
+        - Updated YngveHestem.GenericParameterCollection version to 1.0.2-beta24.
+        - Added a new interface - ICustomParameterControl, and a base class CustomParameterControlBase. This could be used to add custom controls for specialized items. For example, a control could be added to show a color-picker if a given value (or in additionalInfo), said it was a hex-value for color, or a ParameterCollection had argb-values. This might make a better user-experience than the custom controls in some situations.
+
+        Version 1.1.0-beta02:
+        - Updated YngveHestem.GenericParameterCollection version to 1.0.2-beta23.
+        - Updated Eto.Forms to version 2.8.0.
+        - Updated BytesPreview.Core to version 1.0.1.
+
         Version 1.1.0-beta01:
         - Implements the support for preview-controls if the given type supports it. The implementations supported is given via the ParameterCollectionPanelOptions-object.
 
@@ -26,9 +36,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.7.4" />
-    <PackageReference Include="YngveHestem.GenericParameterCollection" Version="1.0.2-beta16" />
-    <PackageReference Include="YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core" Version="1.0.0" />
+    <PackageReference Include="Eto.Forms" Version="2.8.2" />
+    <PackageReference Include="YngveHestem.GenericParameterCollection" Version="1.0.2-beta24" />
+    <PackageReference Include="YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="\" />
