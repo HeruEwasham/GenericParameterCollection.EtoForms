@@ -15,18 +15,24 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             return CanCreateControl(parameterType, additionalInfo, parameterOptions);
         }
 
-        public abstract bool CanGetValue(Type controlType, Control control, ParameterType returnType, Parameter oldParameter);
+        public abstract bool CanGetDefaultValue(Type returnType, ParameterType returnParameterType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions parameterOptions);
+
+        public abstract bool CanGetValue(Type controlType, Control control, ParameterType returnType, ParameterCollection additionalInfo);
 
         public abstract Control CreateControl(Parameter parameter, ParameterCollectionPanelOptions parameterOptions);
 
         public abstract Control CreateControl(object currentValue, ParameterType parameterType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions parameterOptions);
 
-        public virtual ParameterCollection GetAdditionalInfo(Type controlType, Control control, ParameterType returnType, Parameter oldParameter)
+        public virtual ParameterCollection GetAdditionalInfo(Type controlType, Control control, ParameterType returnType, ParameterCollection additionalInfo)
         {
-            return oldParameter.GetAdditionalInfo();
+            return additionalInfo;
         }
 
-        public abstract object GetValue(Type controlType, Control control, ParameterType returnType, Parameter oldParameter);
+        public abstract TReturnType GetDefaultValue<TReturnType>(ParameterType returnType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions options);
+
+        public abstract object GetValue(Type controlType, Control control, ParameterType returnType, ParameterCollection additionalInfo);
+
+        public abstract string ToString(object currentValue, ParameterType parameterType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions parameterOptions);
 
         /// <summary>
         /// Can this class create a control for this parameter. This omits the value-parameter as this is most likely not neccessarry to use. If you should need it, you must override the other CanCreateControl-methods, that do contain it.

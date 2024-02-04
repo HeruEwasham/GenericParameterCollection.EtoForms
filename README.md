@@ -79,11 +79,19 @@ Mark that it exist multiple parameters that currently can not be defined in a Pa
 | ComboBoxReadOnly | comboBoxReadOnly | bool | If true the value in the textbox in a combobox can not be changed manually (you need to find the value in the list)| True |
 | DateTimeFormat | dateTimeFormat | string | Define how the DateTime should be formatted when converted to a string (for ParameterType.DateTime) | g |
 | DateFormat | dateFormat | string | Define how the DateTime should be formatted when converted to a string (for ParameterType.Date) | d |
-|  | defaultValue | TValue (Generic baseed on value (IEnumerable<TValue>)) | This is used on IEnumerable-types to define their Default-value (which is their initial state when adding new value) | If not defined, this will either be default(TValue) or String.Empty if TValue is string or DateTime.Now if TValue is DateTime |
+|  | defaultValue | TValue (Generic baseed on value (IEnumerable<TValue>)) | This is used on IEnumerable-types to define their Default-value (which is their initial state when adding new value) | If not defined, this will either be defined by a CustomParameterControl, be default(TValue) or String.Empty if TValue is string or DateTime.Now if TValue is DateTime |
 | SupportedFileExtensions | supportedExtensions | string[] | Defines what types of file extensions is supported when selecting files for ParameterType.Bytes. All must have a leading . | Empty string[] or null means all types supported/no filter added |
 |  | filename | string | This can be added to a Bytes-parameter to give information on what the filename of the file was. This is just for cosmetics and is not neccessarry (but will provide info to the user). When a Bytes-parameter is updated, this parameter in Additionalinfo will also be added/updated by the editor (so if you want to know the filename and uses this editor, this parameter will give you that info) |  |
 |  | extension | string | The file extension for the filetype a Bytes-parameter has. The value should have a leading . This parameter is most likely needed if a preview of the file is wanted. This parameter in Additionalinfo will also be added/updated by the editor when the Bytes-parameter is updated |  |
 | BytesPreviews |  | IBytesPreview[] | List with all supported preview-implementation for byte-arrays. If one or more parameters has ParameterType.Bytes, the editor will check this list for possible preview-functionality. If it finds a suitable fit, it will select the first it finds.
+
+### The possibillity to easily add custom controls to parameters
+
+If you want to show a value a specific way that are not supported by default, like for example let the user select a color, a font or let the user select a value based on a slider, it is possible to do so.
+
+There are an interface, ICustomParameterControl, that lets you do this. There is also an abstract class, CustomParameterControlBase, that tries to simplify this a little bit, and is recommended to use.
+
+When you use this, IEnumerables (ie. list, collection, etc.) of the generated types will automatically be supported. But you will also be able to show IEnumerables another way also. Please see the TestProject in the repository for a simple example for how it can be used.
 
 ## Notice
 

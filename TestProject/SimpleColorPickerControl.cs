@@ -11,7 +11,12 @@ namespace TestProject
     {
         private static readonly IParameterValueConverter[] _colorConverter = new[] { new SimpleColorConverter() };
 
-        public override bool CanGetValue(Type controlType, Control control, ParameterType returnType, Parameter oldParameter)
+        public override bool CanGetDefaultValue(Type returnType, ParameterType returnParameterType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions parameterOptions)
+        {
+            return CanCreateColorPicker(returnParameterType, additionalInfo);
+        }
+
+        public override bool CanGetValue(Type controlType, Control control, ParameterType returnType, ParameterCollection additionalInfo)
         {
             return controlType == typeof(ColorPicker) && returnType == ParameterType.ParameterCollection;
         }
@@ -42,7 +47,17 @@ namespace TestProject
             return CreateControl(parameter.GetValue<ParameterCollection>(), parameter.Type, parameter.GetAdditionalInfo(), parameterOptions);
         }
 
-        public override object GetValue(Type controlType, Control control, ParameterType returnType, Parameter oldParameter)
+        public override TReturnType GetDefaultValue<TReturnType>(ParameterType returnType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions options)
+        {
+            if (!CanCreateColorPicker(returnType, additionalInfo))
+            {
+                throw new ArgumentException("Can not get default value with theese parameters by using " + nameof(SimpleColorPickerControl));
+            }
+
+            return (TReturnType)(object)ParameterCollection.FromObject(Colors.Black, _colorConverter);
+        }
+
+        public override object GetValue(Type controlType, Control control, ParameterType returnType, ParameterCollection additionalInfo)
         {
             if (!(controlType == typeof(ColorPicker) && returnType == ParameterType.ParameterCollection))
             {
@@ -50,6 +65,17 @@ namespace TestProject
             }
 
             return ParameterCollection.FromObject(((ColorPicker)control).Value, _colorConverter);
+        }
+
+        public override string ToString(object currentValue, ParameterType parameterType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions parameterOptions)
+        {
+            var v = ((ParameterCollection)currentValue);
+            if (!v.CanConvertToObject<Color>(_colorConverter))
+            {
+                throw new ArgumentException("Can not set string value with a parameter with theese parameters by using " + nameof(SimpleColorPickerControl));
+            }
+
+            return v.ToObject<Color>(_colorConverter).ToString();
         }
 
         protected override bool CanCreateControl(ParameterType parameterType, ParameterCollection additionalInfo, ParameterCollectionPanelOptions parameterOptions)

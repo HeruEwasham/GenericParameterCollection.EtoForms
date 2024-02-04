@@ -27,7 +27,7 @@ namespace TestProject
             var a = 1f;
             if (value.HasKeyAndCanConvertTo("a", typeof(double)))
             {
-                a = value.GetByKey<int>("a");
+                a = value.GetByKey<float>("a");
             }
             return new Color(r, g, b, a);
         }

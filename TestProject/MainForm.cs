@@ -47,7 +47,7 @@ namespace TestProject
 			{
 				new Parameter("type", "color")
 			}, null, CustomConverters),
-			new Parameter("A color", Colors.Blue, new ParameterCollection
+			new Parameter("A color - ReadOnly", Colors.Blue, new ParameterCollection
 			{
 				new Parameter("type", "color"),
 				new Parameter("readOnly", true)
