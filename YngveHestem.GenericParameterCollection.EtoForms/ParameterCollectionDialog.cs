@@ -7,14 +7,14 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
 {	
 	public class ParameterCollectionDialog : Dialog<ParameterCollection>
 	{	
-		public ParameterCollectionDialog(ParameterCollection parameters, ParameterCollectionPanelOptions options = null, string title = "Show/Edit parameters")
+		public ParameterCollectionDialog(ParameterCollection parameters, ParameterCollectionPanelOptions options = null, IEnumerable<ICustomParameterControl> customParameterControls = null, string title = "Show/Edit parameters")
 		{
 			if (options == null)
 			{
 				options = new ParameterCollectionPanelOptions();
 			}
 
-			var parametersPanel = new ParameterCollectionPanel(parameters, options);
+			var parametersPanel = new ParameterCollectionPanel(parameters, options, customParameterControls);
 
             Title = title;
 

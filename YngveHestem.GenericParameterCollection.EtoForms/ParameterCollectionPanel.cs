@@ -2,18 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Eto.Drawing;
 using Eto.Forms;
+using Newtonsoft.Json.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace YngveHestem.GenericParameterCollection.EtoForms
 {
     public class ParameterCollectionPanel : Panel
     {
         private ParameterCollection _parameters;
+        private List<ICustomParameterControl> _customControls;
 
-        public ParameterCollectionPanel(ParameterCollection parameters, ParameterCollectionPanelOptions options = null)
+        public ParameterCollectionPanel(ParameterCollection parameters, ParameterCollectionPanelOptions options = null, IEnumerable<ICustomParameterControl> customParameterControls = null)
         {
             _parameters = parameters;
+            if (customParameterControls != null)
+            {
+                _customControls = customParameterControls.ToList();
+            }
             Content = new TableLayout(GetRows(parameters, options))
             {
                 Spacing = new Size(10, 10)
@@ -28,51 +36,97 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
             foreach (var row in ((TableLayout)Content).Rows)
             {
                 var oldParameter = (Parameter)row.Cells[1].Control.Tag;
-
-                result.Add(new Parameter(oldParameter.Key, GetValue(row.Cells[1].Control, oldParameter.Type, oldParameter), oldParameter.Type, oldParameter.GetAdditionalInfo()));
+                var value = GetValue(row.Cells[1].Control, oldParameter.Type, oldParameter);
+                result.Add(new Parameter(oldParameter.Key, value.Item1, oldParameter.Type, value.Item2));
             }
 
             return result;
         }
 
-        private object GetValue(Control control, ParameterType returnType, Parameter oldParameter)
+        /// <summary>
+        /// Gets the new values. The object-part is the value itself, while the ParameterCollection is the additionalInfo.
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="returnType"></param>
+        /// <param name="oldParameter"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private Tuple<object, ParameterCollection> GetValue(Control control, ParameterType returnType, Parameter oldParameter)
         {
             var type = control.GetType();
-            if (type == typeof(TextBox))
+            ICustomParameterControl customControl = null;
+            if (_customControls != null)
             {
-                return ((TextBox)control).Text;
+                customControl = _customControls.FirstOrDefault(cc => cc.CanGetValue(type, control, returnType, oldParameter.GetAdditionalInfo()));
+            }
+
+            if (customControl != null)
+            {
+                return new Tuple<object, ParameterCollection>(customControl.GetValue(type, control, returnType, oldParameter.GetAdditionalInfo()), customControl.GetAdditionalInfo(type, control, returnType, oldParameter.GetAdditionalInfo()));
+            }
+            else if (type == typeof(TextBox))
+            {
+                return new Tuple<object, ParameterCollection>(((TextBox)control).Text, oldParameter.GetAdditionalInfo());
             }
             else if (type == typeof(TextArea))
             {
-                return ((TextArea)control).Text;
+                return new Tuple<object, ParameterCollection>(((TextArea)control).Text, oldParameter.GetAdditionalInfo());
             }
             else if (type == typeof(NumericStepper))
             {
                 if (returnType == ParameterType.Int)
                 {
-                    return (int)((NumericStepper)control).Value;
+                    return new Tuple<object, ParameterCollection>((int)((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
                 }
-                else if (returnType == ParameterType.Float)
+                else if (returnType == ParameterType.Decimal)
                 {
-                    return (float)((NumericStepper)control).Value;
+                    return new Tuple<object, ParameterCollection>((decimal)((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
                 }
-                else if (returnType == ParameterType.Long)
-                {
-                    return (long)((NumericStepper)control).Value;
-                }
-                return ((NumericStepper)control).Value;
+                return new Tuple<object, ParameterCollection>(((NumericStepper)control).Value, oldParameter.GetAdditionalInfo());
             }
-            else if (type == typeof(Panel))
+            else if (type == typeof(BytesPanel))
             {
-                return ((Panel)control).Content.Tag;
+                var adI = oldParameter.GetAdditionalInfo();
+                var bControl = (BytesPanel)control;
+                if (adI == null)
+                {
+                    adI = new ParameterCollection();
+                }
+
+                if (adI.HasKey("filename"))
+                {
+                    adI.GetParameterByKey("filename").SetValue(bControl.Filename);
+                }
+                else if (bControl.Filename != null)
+                {
+                    adI.Add("filename", bControl.Filename);
+                }
+
+                if (adI.HasKey("extension"))
+                {
+                    adI.GetParameterByKey("extension").SetValue(bControl.Extension);
+                }
+                else if (bControl.Extension != null)
+                {
+                    adI.Add("extension", bControl.Extension);
+                }
+                return new Tuple<object, ParameterCollection>(bControl.Value, adI);
+            }
+            else if (type == typeof(ParameterCollectionOpenDialogPanel))
+            {
+                return new Tuple<object, ParameterCollection>(((ParameterCollectionOpenDialogPanel)control).Value, oldParameter.GetAdditionalInfo());
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(EditableList<>).GetGenericTypeDefinition())
+            {
+                return new Tuple<object, ParameterCollection>(type.GetProperty("Value").GetValue(control), oldParameter.GetAdditionalInfo());
             }
             else if (type == typeof(CheckBox))
             {
-                return ((CheckBox)control).Checked;
+                return new Tuple<object, ParameterCollection>(((CheckBox)control).Checked, oldParameter.GetAdditionalInfo());
             }
             else if (type == typeof(DateTimePicker))
             {
-                return ((DateTimePicker)control).Value.Value;
+                return new Tuple<object, ParameterCollection>(((DateTimePicker)control).Value.Value, oldParameter.GetAdditionalInfo());
             }
             else if (type == typeof(DropDown))
             {
@@ -85,7 +139,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 {
                     param.Add("type", p.GetByKey<string>("type"));
                 }
-                return param;
+                return new Tuple<object, ParameterCollection>(param, oldParameter.GetAdditionalInfo());
             }
             else if (type == typeof(ComboBox))
             {
@@ -98,7 +152,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 {
                     param.Add("type", p.GetByKey<string>("type"));
                 }
-                return param;
+                return new Tuple<object, ParameterCollection>(param, oldParameter.GetAdditionalInfo());
             }
             else if (type == typeof(GridView<string>))
             {
@@ -118,7 +172,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 {
                     result.Add("value", ((GridView<string>)control).SelectedItem);
                 }
-                return result;
+                return new Tuple<object, ParameterCollection>(result, oldParameter.GetAdditionalInfo());
             }
             else
             {
@@ -143,7 +197,17 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                     parameterOptions = ParameterCollectionPanelOptions.CreateFromParameterCollection(parameter.GetAdditionalInfo(), parameterOptions);
                 }
 
-                if (parameter.Type == ParameterType.String)
+                ICustomParameterControl customControl = null;
+                if (_customControls != null)
+                {
+                    customControl = _customControls.FirstOrDefault(cc => cc.CanCreateControl(parameter, parameterOptions));
+                }
+
+                if (customControl != null)
+                {
+                    control = customControl.CreateControl(parameter, parameterOptions).AddParameter(parameter);
+                }
+                else if (parameter.Type == ParameterType.String)
                 {
                     control = parameterOptions.CreateTextBox(parameter.GetValue<string>()).AddParameter(parameter);
                 }
@@ -155,15 +219,13 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 {
                     control = parameterOptions.CreateNumericStepper(parameter.GetValue<double>(), true).AddParameter(parameter);
                 }
-                else if (parameter.Type == ParameterType.Float
-                    || parameter.Type == ParameterType.Double
-                    || parameter.Type == ParameterType.Long)
+                else if (parameter.Type == ParameterType.Decimal)
                 {
                     control = parameterOptions.CreateNumericStepper(parameter.GetValue<double>()).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.Bytes)
                 {
-                    control = parameterOptions.CreateBytesPanel(parameter.GetValue<byte[]>()).AddParameter(parameter);
+                    control = new BytesPanel(parameterOptions, parameter.GetValue<byte[]>(), parameter).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.Bool)
                 {
@@ -175,39 +237,31 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 }
                 else if (parameter.Type == ParameterType.ParameterCollection)
                 {
-                    control = parameterOptions.CreateParameterCollectionOpenDialogPanel(parameter.GetValue<ParameterCollection>()).AddParameter(parameter);
+                    control = new ParameterCollectionOpenDialogPanel(parameter.GetValue<ParameterCollection>(), parameterOptions).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.String_IEnumerable || parameter.Type == ParameterType.String_Multiline_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<string>(parameter);
+                    control = new EditableList<string>(parameter, parameterOptions, _customControls).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.Int_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<int>(parameter);
+                    control = new EditableList<int>(parameter, parameterOptions, _customControls).AddParameter(parameter);
                 }
-                else if (parameter.Type == ParameterType.Float_IEnumerable)
+                else if (parameter.Type == ParameterType.Decimal_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<float>(parameter);
-                }
-                else if (parameter.Type == ParameterType.Double_IEnumerable)
-                {
-                    control = parameterOptions.CreateList<double>(parameter);
-                }
-                else if (parameter.Type == ParameterType.Long_IEnumerable)
-                {
-                    control = parameterOptions.CreateList<long>(parameter);
+                    control = new EditableList<decimal>(parameter, parameterOptions, _customControls).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.Bool_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<bool>(parameter);
+                    control = new EditableList<bool>(parameter, parameterOptions, _customControls).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.DateTime_IEnumerable || parameter.Type == ParameterType.Date_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<DateTime>(parameter);
+                    control = new EditableList<DateTime>(parameter, parameterOptions, _customControls).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.ParameterCollection_IEnumerable)
                 {
-                    control = parameterOptions.CreateList<ParameterCollection>(parameter);
+                    control = new EditableList<ParameterCollection>(parameter, parameterOptions, _customControls).AddParameter(parameter);
                 }
                 else if (parameter.Type == ParameterType.Enum || parameter.Type == ParameterType.SelectOne)
                 {

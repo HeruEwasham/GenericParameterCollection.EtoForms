@@ -1,5 +1,6 @@
 ﻿using System;
 using Eto.Drawing;
+using YngveHestem.GenericParameterCollection.EtoForms.BytesPreview.Core;
 
 namespace YngveHestem.GenericParameterCollection.EtoForms
 {
@@ -81,7 +82,7 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
         public Color CancelDeleteTextColor = Colors.Black;
 
         /// <summary>
-        /// Color used on cotrol background.
+        /// Color used on control background.
         /// </summary>
         public Color NormalBackgroundColor = Colors.Transparent;
 
@@ -96,17 +97,17 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
         public Color ParameterNameBackgroundColor = Colors.Transparent;
 
         /// <summary>
-        /// Color used on submit or add buttons text.
+        /// Color used on submit or add buttons background.
         /// </summary>
         public Color SubmitAddBackgroundColor = Colors.LimeGreen;
 
         /// <summary>
-        /// Color used on edit buttons text.
+        /// Color used on edit buttons background.
         /// </summary>
         public Color EditBackgroundColor = Colors.LightBlue;
 
         /// <summary>
-        /// Color used on cancel or delete buttons text.
+        /// Color used on cancel or delete buttons background.
         /// </summary>
         public Color CancelDeleteBackgroundColor = Colors.Red;
 
@@ -160,6 +161,14 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
         /// </summary>
         public string DateFormat = "d";
 
+        /// <summary>
+        /// Defines what types of file extensions is supported when selecting files for ParameterType.Bytes. All must have a leading .
+        /// Empty string[] means all types supported/no filter added.
+        /// </summary>
+        public string[] SupportedFileExtensions = null;
+
+        public IBytesPreview[] BytesPreviews = null;
+
         public static ParameterCollectionPanelOptions CreateCopy(ParameterCollectionPanelOptions options)
         {
             return new ParameterCollectionPanelOptions
@@ -194,7 +203,9 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 SingleSelection = options.SingleSelection,
                 ComboBoxReadOnly = options.ComboBoxReadOnly,
                 DateTimeFormat = options.DateTimeFormat,
-                DateFormat = options.DateFormat
+                DateFormat = options.DateFormat,
+                SupportedFileExtensions = options.SupportedFileExtensions,
+                BytesPreviews = options.BytesPreviews
             };
         }
 
@@ -286,6 +297,11 @@ namespace YngveHestem.GenericParameterCollection.EtoForms
                 if (parameters.HasKeyAndCanConvertTo("dateFormat", typeof(string)))
                 {
                     result.DateFormat = parameters.GetByKey<string>("dateFormat");
+                }
+
+                if  (parameters.HasKeyAndCanConvertTo("supportedExtensions", typeof(string[])))
+                {
+                    result.SupportedFileExtensions = parameters.GetByKey<string[]>("supportedExtensions");
                 }
             }
             return result;
